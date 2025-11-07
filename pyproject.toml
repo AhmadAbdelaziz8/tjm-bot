@@ -1,0 +1,16 @@
+[project]
+name = "tjm-vision-project"
+version = "1.0.0"
+dependencies = [
+    "opencv-python-headless",
+    "pyautogui",
+    "mss",
+    "requests",
+    "PyGetWindow",
+    "numpy",
+    "botcity-framework-core",
+]
+
+
+
+
