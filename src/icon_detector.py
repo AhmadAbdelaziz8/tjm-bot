@@ -12,13 +12,11 @@ icon_cache = {}
 def register_templates(bot: DesktopBot, directory: Path) -> bool:
     """Register all PNG templates from the given directory."""
     if not directory.is_dir():
-        print(f"Error: Template directory not found at {directory}")
         return False
         
     for img_path in directory.glob("*.png"):
         label = img_path.stem
         bot.add_image(label, str(img_path.resolve()))
-        print(f"Registered template: {img_path.name} as '{label}'")
     
     return True
 
