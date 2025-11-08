@@ -76,6 +76,24 @@ tjm-bot/
 - `PyGetWindow`: Window management
 - `pyperclip`: Clipboard operations
 
+### Core Functionality
+
+- Complete automation workflow: icon detection → launch → write → save → close
+- Dynamic icon grounding that works regardless of desktop position
+- Robust error handling with retry logic and validation
+
+### Deliverables
+
+- 3 annotated screenshots showing icon detection in different screen areas
+- Video demonstration of the bot in action
+- Source code with clear structure and UV configuration
+
+### Bonus Features
+
+- Multiple icon templates supporting different themes and sizes
+- Icon caching for improved performance
+- Fallback matching thresholds for better reliability
+
 ## Deliverables
 
 The following annotated screenshots are located in the `deliverables/` folder, demonstrating icon detection in different screen areas:
@@ -92,4 +110,6 @@ The following annotated screenshots are located in the `deliverables/` folder, d
 
 ![Icon detected in bottom-right area](deliverables/bottom-right-corner.png)
 
-### link Video to show the bot in action: https://drive.google.com/file/d/1bXX875FNS6nNIGAl3h8NjFzgBqtSGqMo/view?usp=sharing
+### Video Demonstration
+
+[Watch the bot in action](https://drive.google.com/file/d/1bXX875FNS6nNIGAl3h8NjFzgBqtSGqMo/view?usp=sharing) - Live preview showing the complete automation workflow
