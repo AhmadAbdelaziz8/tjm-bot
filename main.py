@@ -1,33 +1,26 @@
-import requests
 import time
 import pyautogui
-from pathlib import Path
 from botcity.core import DesktopBot
-from automation import (
-    register_templates, launch_notepad, close_existing_notepad,
-    close_notepad_fully, write_post_to_notepad, TEMPLATE_DIR
+
+from src.icon_detector import register_templates
+from src.notepad import (
+    close_existing_notepad,
+    close_notepad_fully,
+    fetch_posts,
+    launch_notepad,
+    write_post_to_notepad,
 )
-
-API_URL = "https://jsonplaceholder.typicode.com/posts"
-PROJECT_PATH = Path.home() / "Desktop" / "tjm-project"
-
-
-def fetch_posts():
-    try:
-        response = requests.get(API_URL)
-        response.raise_for_status()
-        return response.json()
-    except requests.exceptions.RequestException as e:
-        print(f"Error: API is unavailable. {e}")
-        return None
+from src.config import TEMPLATE_DIR, PROJECT_PATH
 
 
 def setup_environment():
+    """Ensure project directory exists."""
     print(f"Ensuring project directory exists: {PROJECT_PATH}")
     PROJECT_PATH.mkdir(parents=True, exist_ok=True)
 
 
-def process_post(post, bot, template_labels):
+def process_post(post: dict, bot: DesktopBot, template_labels: list[str]):
+    """Process a single post: launch Notepad, write content, and close."""
     print(f"\n{'='*60}")
     print(f"Processing Post ID: {post['id']}")
     print(f"{'='*60}")
@@ -51,6 +44,7 @@ def process_post(post, bot, template_labels):
 
 
 def main():
+    """Main execution function."""
     # Show desktop to ensure clean state
     print("Showing desktop (Windows+D)...")
     pyautogui.hotkey('win', 'd')
