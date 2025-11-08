@@ -92,6 +92,4 @@ The following annotated screenshots are located in the `deliverables/` folder, d
 
 ![Icon detected in bottom-right area](deliverables/bottom-right-corner.png)
 
-### Video to show the bot in action
-
-![Video to show the bot in action](deliverables/tjm-bot-live-preview.mp4)
+### link Video to show the bot in action: https://drive.google.com/file/d/1bXX875FNS6nNIGAl3h8NjFzgBqtSGqMo/view?usp=sharing
