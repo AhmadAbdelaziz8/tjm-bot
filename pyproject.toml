@@ -9,4 +9,3 @@ dependencies = [
     "botcity-framework-core",
     "pyperclip",
 ]
-

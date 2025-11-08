@@ -3,6 +3,7 @@ import pyautogui
 from botcity.core import DesktopBot
 
 from src.icon_detector import register_templates
+
 from src.notepad import (
     close_existing_notepad,
     close_notepad_fully,

@@ -75,3 +75,23 @@ tjm-bot/
 - `requests`: HTTP client for API calls
 - `PyGetWindow`: Window management
 - `pyperclip`: Clipboard operations
+
+## Deliverables
+
+The following annotated screenshots are located in the `deliverables/` folder, demonstrating icon detection in different screen areas:
+
+### Icon detected in top-left area
+
+![Icon detected in top-left area](deliverables/top-left-corner.png)
+
+### Icon detected in center of screen
+
+![Icon detected in center of screen](deliverables/central.png)
+
+### Icon detected in bottom-right area
+
+![Icon detected in bottom-right area](deliverables/bottom-right-corner.png)
+
+### Video to show the bot in action
+
+![Video to show the bot in action](deliverables/tjm-bot-live-preview.mp4)
