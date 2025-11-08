@@ -510,18 +510,18 @@ version = "1.0.0"
 source = { virtual = "." }
 dependencies = [
     { name = "botcity-framework-core" },
-    { name = "opencv-python" },
     { name = "pyautogui" },
     { name = "pygetwindow" },
+    { name = "pyperclip" },
     { name = "requests" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "botcity-framework-core" },
-    { name = "opencv-python" },
     { name = "pyautogui" },
     { name = "pygetwindow" },
+    { name = "pyperclip" },
     { name = "requests" },
 ]
 

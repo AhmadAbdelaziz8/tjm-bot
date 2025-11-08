@@ -5,7 +5,7 @@ from botcity.core import DesktopBot
 
 from .config import TEMPLATE_DIR, MATCHING_THRESHOLD, FIND_WAIT_TIME
 
-# Icon cache for faster subsequent lookups
+# Icon cache for faster subsequent lookups / in case of the same coordinates
 icon_cache = {}
 
 

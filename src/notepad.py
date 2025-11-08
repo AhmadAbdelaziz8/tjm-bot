@@ -12,15 +12,13 @@ from .config import MATCHING_THRESHOLD, FIND_WAIT_TIME, API_URL, PROJECT_PATH
 
 
 def get_notepad_windows():
-    """Get all Notepad windows, excluding Cursor/Code windows."""
     all_windows = gw.getWindowsWithTitle("Notepad")
     notepad_windows = []
     
     for window in all_windows:
         title = window.title.lower()
         if title == "notepad" or title.endswith(" - notepad"):
-            if "cursor" not in title and "code" not in title:
-                notepad_windows.append(window)
+            notepad_windows.append(window)
     
     return notepad_windows
 
@@ -212,62 +210,125 @@ def write_post_to_notepad(post: dict, project_path: Path):
     if active_windows:
         window = active_windows[0]
         window.activate()
-        time.sleep(0.5)
+        time.sleep(0.2)
         
         center_x = window.left + window.width // 2
         center_y = window.top + window.height // 2
         pyautogui.click(center_x, center_y)
-        time.sleep(0.3)
+        time.sleep(0.15)
     
-    time.sleep(0.5)
+    time.sleep(0.2)
     save_dialogs = gw.getWindowsWithTitle("Save As")
     if save_dialogs:
-        timeout = time.time() + 3
+        timeout = time.time() + 2
         while time.time() < timeout and gw.getWindowsWithTitle("Save As"):
-            time.sleep(0.2)
+            time.sleep(0.1)
     
     pyautogui.hotkey('ctrl', 'n')
-    time.sleep(0.8)
+    time.sleep(0.4)
     
     active_windows = get_notepad_windows()
     if active_windows:
         window = active_windows[0]
         window.activate()
-        time.sleep(0.3)
+        time.sleep(0.15)
         center_x = window.left + window.width // 2
         center_y = window.top + window.height // 2
         pyautogui.click(center_x, center_y)
-        time.sleep(0.3)
+        time.sleep(0.15)
     
     content = f"Title: {post['title']}\n\n{post['body']}"
     pyperclip.copy(content)
-    time.sleep(0.2)
+    time.sleep(0.1)
     
     pyautogui.hotkey('ctrl', 'a')
-    time.sleep(0.3)
+    time.sleep(0.15)
     pyautogui.press('delete')
-    time.sleep(0.3)
+    time.sleep(0.15)
     
     pyautogui.hotkey('ctrl', 'v')
-    time.sleep(0.5)
+    time.sleep(0.3)
     
     pyautogui.hotkey('ctrl', 's')
-    time.sleep(1)
+    time.sleep(0.8)
+    
+    # Wait for Save As dialog to appear
+    save_dialog_timeout = time.time() + 3
+    save_dialog_found = False
+    while time.time() < save_dialog_timeout:
+        save_dialogs = gw.getWindowsWithTitle("Save As")
+        if save_dialogs:
+            save_dialog_found = True
+            save_dialogs[0].activate()
+            time.sleep(0.2)
+            break
+        time.sleep(0.1)
+    
+    if not save_dialog_found:
+        print(f"Warning: Save As dialog not found for post {post['id']}")
+        return
+    
+    # Navigate to the filename field (Alt+N or just click in the filename area)
+    # First, clear any existing text in the filename field
+    pyautogui.hotkey('ctrl', 'a')
+    time.sleep(0.1)
     
     filename = f"post_{post['id']}.txt"
     filepath = str(project_path / filename)
-    pyautogui.write(filepath, interval=0.01)
+    
+    # Use clipboard to paste the full path (more reliable than typing)
+    pyperclip.copy(filepath)
+    time.sleep(0.1)
+    pyautogui.hotkey('ctrl', 'v')
+    time.sleep(0.3)
     pyautogui.press('enter')
     time.sleep(0.5)
     
+    # Check for confirmation dialog (file already exists)
     confirm_window = gw.getWindowsWithTitle("Confirm Save As")
     if confirm_window:
+        confirm_window[0].activate()
+        time.sleep(0.1)
         pyautogui.press('y')
-        time.sleep(0.5)
+        time.sleep(0.3)
     
+    # Wait for Save As dialog to close and return to Notepad
+    save_dialog_timeout = time.time() + 2
+    while time.time() < save_dialog_timeout:
+        save_dialogs = gw.getWindowsWithTitle("Save As")
+        if not save_dialogs:
+            break
+        time.sleep(0.1)
+    
+    # Ensure we're back in the Notepad window and it's focused
+    active_windows = get_notepad_windows()
+    if active_windows:
+        window = active_windows[0]
+        window.activate()
+        time.sleep(0.2)
+        
+        # Click in the window to ensure focus
+        center_x = window.left + window.width // 2
+        center_y = window.top + window.height // 2
+        pyautogui.click(center_x, center_y)
+        time.sleep(0.15)
+    
+    # Close the tab/document with Ctrl+W (for tabbed Notepad)
+    # If Ctrl+W doesn't work, we'll fall back to closing the window
     pyautogui.hotkey('ctrl', 'w')
-    time.sleep(0.8)
-
+    time.sleep(0.5)
     
-    
-
+    # Check if window still exists - if so, close it directly
+    active_windows = get_notepad_windows()
+    if active_windows:
+        for window in active_windows:
+            if window.visible:
+                window.activate()
+                time.sleep(0.1)
+                # Try Alt+F4 as alternative
+                pyautogui.hotkey('alt', 'f4')
+                time.sleep(0.3)
+                # If still open, force close
+                if window.visible:
+                    window.close()
+                    time.sleep(0.2)

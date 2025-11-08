@@ -6,8 +6,7 @@ dependencies = [
     "pyautogui",
     "requests",
     "PyGetWindow",
-    "opencv-python",
     "botcity-framework-core",
+    "pyperclip",
 ]
-
 
