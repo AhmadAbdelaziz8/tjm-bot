@@ -21,7 +21,6 @@ def register_templates(bot: DesktopBot, directory: Path) -> bool:
 
 
 def invalidate_cache(label: str = None):
-    """Invalidate icon cache for a specific label or clear entire cache."""
     if label:
         icon_cache.pop(label, None)
     else:

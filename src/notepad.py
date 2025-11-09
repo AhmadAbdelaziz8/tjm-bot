@@ -73,32 +73,19 @@ def get_notepad_windows():
             notepad_windows.append(window)
     
     return notepad_windows
-
-
-def _is_valid_notepad(window) -> bool:
-    """Check if window is a valid Notepad window."""
-    title = window.title.lower()
-    return "cursor" not in title and "code" not in title
-
-
 # ============================================================================
 # Window Closing
 # ============================================================================
 
-def close_notepad(verify: bool = False) -> bool:
-    """Close all existing Notepad windows. If verify=True, returns success status."""
+def close_notepad() -> bool:
     active_windows = get_notepad_windows()
     if not active_windows:
         return True
     
     for window in active_windows:
-        if window.visible and _is_valid_notepad(window):
+        if window.visible:
             _close_window_with_fallback(window)
     
-    if not verify:
-        return True
-    
-    # Verification: wait for windows to close
     timeout = time.time() + 5
     while time.time() < timeout:
         remaining_windows = get_notepad_windows()
@@ -111,23 +98,13 @@ def close_notepad(verify: bool = False) -> bool:
     remaining_windows = get_notepad_windows()
     if remaining_windows:
         for window in remaining_windows:
-            if window.visible and _is_valid_notepad(window):
+            if window.visible:
                 _close_window_with_fallback(window)
         
         final_check = get_notepad_windows()
         return not final_check or not any(win.visible for win in final_check)
     
     return True
-
-
-def close_existing_notepad():
-    """Close all existing Notepad windows (no verification)."""
-    close_notepad(verify=False)
-
-
-def close_notepad_fully() -> bool:
-    """Close Notepad windows with verification."""
-    return close_notepad(verify=True)
 
 
 # ============================================================================
@@ -184,6 +161,7 @@ def _paste_content(content: str):
     """Paste content into Notepad using clipboard."""
     pyperclip.copy(content)
     _wait()
+    # Select all content, delete it, and paste the new content
     pyautogui.hotkey('ctrl', 'a')
     _wait()
     pyautogui.press('delete')
