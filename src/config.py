@@ -11,3 +11,6 @@ API_URL = "https://jsonplaceholder.typicode.com/posts"
 # Template matching
 MATCHING_THRESHOLD = 0.85
 FIND_WAIT_TIME = 400
+
+# Spacing (time delays in seconds)
+SPACING = 0.2

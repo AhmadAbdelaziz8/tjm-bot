@@ -44,12 +44,8 @@ def main():
     setup_environment()
     bot = DesktopBot()
     
-    if not register_templates(bot, TEMPLATE_DIR):
-        print("Error: No templates found.")
-        return
-    
     template_labels = [img_path.stem for img_path in TEMPLATE_DIR.glob("*.png")]
-    if not template_labels:
+    if not template_labels or not register_templates(bot, TEMPLATE_DIR):
         print("Error: No templates found.")
         return
 
