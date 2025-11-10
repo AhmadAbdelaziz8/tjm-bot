@@ -1,5 +1,6 @@
 """Template registration and icon finding."""
 from pathlib import Path
+import pyautogui
 from botcity.core import DesktopBot
 
 from .config import MATCHING_THRESHOLD, FIND_WAIT_TIME
@@ -44,13 +45,9 @@ def find_icon(bot: DesktopBot, template_labels: list[str], use_cache: bool = Tru
             if label in icon_cache:
                 coords = icon_cache[label]
                 if click:
-                    # Re-find to enable double_click on last found element
-                    if bot.find(label=label, matching=MATCHING_THRESHOLD, waiting_time=FIND_WAIT_TIME):
-                        bot.double_click()
-                    else:
-                        # Cache invalid, remove and continue to search
-                        invalidate_cache(label)
-                        break
+                    # Use cached coordinates directly for clicking
+                    x, y = coords
+                    pyautogui.doubleClick(x, y)
                 return (label, coords)
     
     thresholds = [MATCHING_THRESHOLD, MATCHING_THRESHOLD - 0.1]
@@ -59,14 +56,12 @@ def find_icon(bot: DesktopBot, template_labels: list[str], use_cache: bool = Tru
             if bot.find(label=label, matching=threshold, waiting_time=FIND_WAIT_TIME):
                 # Get coordinates immediately after successful find
                 coords = bot.get_element_coords(label, matching=threshold)
-                if not coords:
-                    coords = bot.get_element_coords(label)
                 
                 if coords:
                     x, y = int(coords[0]), int(coords[1])
                     icon_cache[label] = (x, y)
                     if click:
-                        bot.double_click()
+                        pyautogui.doubleClick(x, y)
                     return (label, (x, y))
     
     return None

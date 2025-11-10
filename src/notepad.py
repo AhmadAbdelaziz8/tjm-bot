@@ -30,34 +30,32 @@ def _activate_and_click_center(window):
     _wait()
 
 
-def _wait_for_dialog(title: str, timeout: float) -> bool:
-    """Wait for a dialog window to appear. Returns True if found."""
+def _wait_for_dialog(title: str, timeout: float, wait_for_appear: bool = True) -> bool:
+    """Wait for a dialog window to appear or close.
+    
+    Args:
+        title: Dialog window title
+        timeout: Maximum time to wait in seconds
+        wait_for_appear: If True, wait for dialog to appear; if False, wait for it to close
+    
+    Returns:
+        True if dialog appeared (when wait_for_appear=True), False otherwise
+    """
     end_time = time.time() + timeout
     while time.time() < end_time:
         dialogs = gw.getWindowsWithTitle(title)
-        if dialogs:
+        found = bool(dialogs)
+        
+        if wait_for_appear and found:
             dialogs[0].activate()
             _wait()
             return True
+        elif not wait_for_appear and not found:
+            return True
+        
         _wait()
-    return False
-
-
-def _close_window_with_fallback(window):
-    """Close a window with fallback to Alt+F4 and press 'n'."""
-    try:
-        window.close()
-        _wait()
-        pyautogui.press('n')
-        _wait()
-    except:
-        window.activate()
-        _wait()
-        pyautogui.hotkey('alt', 'f4')
-        _wait()
-        pyautogui.press('n')
-        _wait()
-
+    
+    return False if wait_for_appear else True
 
 # ============================================================================
 # Window Management
@@ -78,33 +76,21 @@ def get_notepad_windows():
 # ============================================================================
 
 def close_notepad() -> bool:
+    """Close all Notepad windows. Returns True if all windows were closed."""
     active_windows = get_notepad_windows()
     if not active_windows:
         return True
     
+    # Close all visible windows
     for window in active_windows:
         if window.visible:
-            _close_window_with_fallback(window)
+            window.close()
     
-    timeout = time.time() + 5
-    while time.time() < timeout:
-        remaining_windows = get_notepad_windows()
-        if not remaining_windows or not any(win.visible for win in remaining_windows):
-            _wait()
-            return True
-        _wait()
+    _wait(0.5)
     
-    # Final attempt with fallback
-    remaining_windows = get_notepad_windows()
-    if remaining_windows:
-        for window in remaining_windows:
-            if window.visible:
-                _close_window_with_fallback(window)
-        
-        final_check = get_notepad_windows()
-        return not final_check or not any(win.visible for win in final_check)
-    
-    return True
+    # Check if any windows remain visible
+    remaining = get_notepad_windows()
+    return not remaining or not any(win.visible for win in remaining)
 
 
 # ============================================================================
@@ -175,7 +161,7 @@ def _save_file(filepath: str) -> bool:
     pyautogui.hotkey('ctrl', 's')
     _wait()
     
-    if not _wait_for_dialog("Save As", 3):
+    if not _wait_for_dialog("Save As", 3, wait_for_appear=True):
         return False
     
     pyautogui.hotkey('ctrl', 'a')
@@ -196,26 +182,16 @@ def _save_file(filepath: str) -> bool:
         _wait()
     
     # Wait for dialog to close
-    end_time = time.time() + 2
-    while time.time() < end_time:
-        if not gw.getWindowsWithTitle("Save As"):
-            break
-        _wait()
+    _wait_for_dialog("Save As", 2.0, wait_for_appear=False)
     return True
 
 
 def write_post_to_notepad(post: dict, project_path: Path):
     """Write post content to Notepad and save it."""
+    # Wait for any existing Save As dialogs to close before starting
+    _wait_for_dialog("Save As", 2.0, wait_for_appear=False)
+    
     _prepare_notepad_window()
-    
-    # Wait for any existing Save As dialogs to close
-    if gw.getWindowsWithTitle("Save As"):
-        end_time = time.time() + 2
-        while time.time() < end_time:
-            if not gw.getWindowsWithTitle("Save As"):
-                break
-            _wait()
-    
     pyautogui.hotkey('ctrl', 'n')
     _wait()
     _prepare_notepad_window()
@@ -230,25 +206,11 @@ def write_post_to_notepad(post: dict, project_path: Path):
         print(f"Warning: Save As dialog not found for post {post['id']}")
         return
     
-    _prepare_notepad_window()
-    
     # Close the tab/document
     pyautogui.hotkey('ctrl', 'w')
     _wait()
     
-    # Force close any remaining windows
-    active_windows = get_notepad_windows()
-    if active_windows:
-        for window in active_windows:
-            if window.visible:
-                window.activate()
-                _wait()
-                pyautogui.hotkey('alt', 'f4')
-                _wait()
-                if window.visible:
-                    window.close()
-                    _wait()
-
+    close_notepad()
 
 # API fetching
 def fetch_posts() -> list[dict] | None:
